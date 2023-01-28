@@ -82,7 +82,7 @@ const displayButton = (button, e) => {
 
 addEventListener("mouseup", (event) => {
   setTimeout(() => {
-    let data = document.getSelection().toString();
+    let data = window.getSelection().toString();
 
     if (data) {
       displayButton(highlightbutton, event);
@@ -113,7 +113,7 @@ addEventListener("mouseup", (event) => {
 // });
 
 highlightbutton.addEventListener("click", () => {
-  var sel = document.getSelection();
+  var sel = window.getSelection();
   var range = sel.getRangeAt(0);
   var selectedText = range.toString();
   var parentElement = range.startContainer.parentNode;
@@ -133,7 +133,7 @@ highlightbutton.addEventListener("click", () => {
 });
 
 downloadbutton.addEventListener("click", () => {
-  let data = document.getSelection().toString();
+  let data = window.getSelection().toString();
   const stateString = data;
   // Create a new Blob with the state string
   const stateBlob = new Blob([stateString], { type: "text/plain" });
