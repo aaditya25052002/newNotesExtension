@@ -74,50 +74,73 @@ document.body.appendChild(downloadbutton);
 
 const displayButton = (button, e) => {
   button.style.display = "block";
-  button.style.left = e.clientX + "px";
-  button.style.top = e.clientY + "px";
+  button.style.left = `${e.pageX}px`;
+  button.style.top = `${e.pageY}px`;
 };
 
 // events to handle the change in data
 
-addEventListener("mouseup", handleMouseUp);
+addEventListener("mouseup", (event) => {
+  setTimeout(() => {
+    let data = document.getSelection().toString();
 
-function handleMouseUp(event) {
-  // Get the current text selection
+    if (data) {
+      displayButton(highlightbutton, event);
+      displayButton(downloadbutton, event);
+    } else {
+      highlightbutton.style.display = "none";
+      downloadbutton.style.display = "none";
+    }
+  }, 0);
+});
 
-  let data = document.getSelection().toString();
+// highlightbutton.addEventListener("click", () => {
+//   // highlightbutton.style.display = "none";
+//   let data = document.getSelection().toString();
+//   console.log(data);
+//   // let note = {
+//   //   text: data,
+//   //   timestamp: new Date().toString(),
+//   // };
+//   // document.cookie = "note=" + JSON.stringify(note);
+//   document.body.innerHTML = document.body.innerHTML.replace(
+//     data,
+//     `<mark class="note">${data}</mark>`
+//   );
+//   console.log(data);
+//   document.getSelection().empty();
+//   // highlightbutton.style.display = "none";
+// });
 
-  if (data) {
-    displayButton(highlightbutton, event);
-    displayButton(downloadbutton, event);
-  } else {
-    highlightbutton.style.display = "none";
-    downloadbutton.style.display = "none";
-  }
-}
+highlightbutton.addEventListener("click", () => {
+  var sel = document.getSelection();
+  var range = sel.getRangeAt(0);
+  var selectedText = range.toString();
+  var parentElement = range.startContainer.parentNode;
 
-highlightbutton.addEventListener("click", highlight);
-downloadbutton.addEventListener("click", download);
-//function to highlight the text
-
-const highlight = () => {
-  let data = document.getSelection().toString();
   let note = {
-    text: data,
+    text: sel,
     timestamp: new Date().toString(),
   };
   document.cookie = "note=" + JSON.stringify(note);
-  document.body.innerHTML = document.body.innerHTML.replace(
-    data,
-    `<mark class="note">${data}</mark>`
-  );
-  highlightbutton.style.display = "none";
-};
 
-const download = () => {
+  var newHTML = parentElement.innerHTML.replace(
+    selectedText,
+    "<mark>" + selectedText + "</mark>"
+  );
+  console.log(parentElement);
+  parentElement.innerHTML = newHTML;
+});
+
+downloadbutton.addEventListener("click", () => {
   let data = document.getSelection().toString();
-  let a = document.createElement("a");
-  a.href = "data:text/plain," + encodeURIComponent(data);
-  a.download = "notes.txt";
-  a.click();
-};
+  const stateString = data;
+  // Create a new Blob with the state string
+  const stateBlob = new Blob([stateString], { type: "text/plain" });
+  // Create a download link and trigger the download
+  const downloadLink = document.createElement("a");
+  downloadLink.href = URL.createObjectURL(stateBlob);
+  downloadLink.download = "yourNotes.txt";
+  downloadLink.click();
+  downloadbutton.style.display = "none";
+});
